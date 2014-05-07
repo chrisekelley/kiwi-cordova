@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="org.rti.kidsthrive.secugen" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<name>SecugenPlugin</name>
+<description>Plugin for Secugen fingerprint scanners</description>
+<js-module name="SecugenPlugin" src="www/SecugenPlugin.js">
+<clobbers target="cordova.plugins.SecugenPlugin" /></js-module>
+<platform name="android"><config-file parent="/*" target="res/xml/config.xml">
+<feature name="SecugenPlugin"><param name="android-package" value="org.rti.kidsthrive.secugenplugin.SecugenPlugin" />
+<param name="onload" value="true" />
+</feature>
+</config-file>
+<config-file parent="/*" target="AndroidManifest.xml"></config-file>
+<source-file src="src/org/rti/kidsthrive/secugenplugin/SecugenPlugin.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="libs/FDxSDKProAndroid.jar" target-dir="libs" />
+<source-file src="libs/armeabi" target-dir="libs" />
+</platform></plugin>
