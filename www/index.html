@@ -23,20 +23,39 @@
         <meta name="format-detection" content="telephone=no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.2.min.css">
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>KidsThrive</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
+    <div data-role="page">
+	    <div data-role="header">
+	            <h1>KidsThive!</h1>
+	    </div><!-- /header -->
+        <div data-role="content" class="app">
+            <!-- <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
-            </div>
+            </div> -->
+            <!-- <p>&nbsp;</p>
+            <p>&nbsp;</p>	
+            <p>&nbsp;</p> -->
+            <p><a href="#" data-role="button" id="register" class="scanner-buttons">Register</a></p>
+<!--             <p>&nbsp;</p> -->
+            <p><a href="#" data-role="button" id="capture" class="scanner-buttons">Capture</a></p>
+            <!-- <p>&nbsp;</p> -->
+            <p><a href="#" data-role="button" id="blink" class="scanner-buttons">Blink LED</a></p>
         </div>
-        <div id="message"></div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
+        <div data-role="footer">
+            <div id="message"></div>
+        </div><!-- /footer -->
+	 </div><!-- /page -->
+	 	<script type="text/javascript" src="js/phonegap-loader.js"></script>
+<!--         <script type="text/javascript" src="cordova.js"></script>
+ -->        
+ 		<script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    	<script type="text/javascript" src="js/jquery.mobile-1.4.2.min.js"></script>
         <script type="text/javascript">
             app.initialize();
         </script>

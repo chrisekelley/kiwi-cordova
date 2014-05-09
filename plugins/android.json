@@ -11,6 +11,10 @@
                         {
                             "xml": "<feature name=\"SecugenPlugin\"><param name=\"android-package\" value=\"org.rti.kidsthrive.secugenplugin.SecugenPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -32,6 +36,12 @@
                             "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />",
                             "count": 1
                         }
+                    ],
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -42,6 +52,9 @@
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
         "com.megster.cordova.bluetoothserial": {
+            "PACKAGE_NAME": "org.rti.kidsthrive"
+        },
+        "org.apache.cordova.file": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         }
     },
