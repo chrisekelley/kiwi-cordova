@@ -15,7 +15,7 @@
     <feature name="BluetoothSerial">
         <param name="android-package" value="com.megster.cordova.BluetoothSerial" />
     </feature>
-    <name>Kidsthrive</name>
+    <name>Kiwi</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
     </description>

@@ -149,7 +149,7 @@ h1 {
 	font-style:normal;
 	height:50px;
 	line-height:50px;
-	width:171px;
+	width:155px;
 	text-decoration:none;
 	text-align:center;
 	text-shadow:1px 1px 0px #86ae47;
@@ -168,4 +168,8 @@ h1 {
 .ui-header .ui-title {
 	font-size: 3em;
 	padding: 0 0;
+}
+
+.app {
+	font-size: 36px;
 }

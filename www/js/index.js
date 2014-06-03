@@ -30,12 +30,15 @@ var app = {
     	// add event listener to register button
     	var el = document.getElementById("register");
     	el.addEventListener("click", register, false);
-    	// add event listener to capture button
-    	var el = document.getElementById("capture");
-    	el.addEventListener("click", capture, false);
+//    	// add event listener to capture button
+//    	var el = document.getElementById("capture");
+//    	el.addEventListener("click", capture, false);
     	// add event listener to blink button
     	var el = document.getElementById("blink");
     	el.addEventListener("click", blink, false);
+    	// add event listener to verify button
+    	var el = document.getElementById("verify");
+    	el.addEventListener("click", verify, false);
     },
     // deviceready Event Handler
     //
@@ -138,6 +141,12 @@ var app = {
    var blink = function() {
 	   console.log('Blink clicked ');
 	   cordova.plugins.SecugenPlugin.blink(function(results) {
+		   app.display(JSON.stringify(results),errorCallback);
+	   });
+   }
+   var verify = function() {
+	   console.log('Verify clicked ');
+	   cordova.plugins.SecugenPlugin.verify(function(results) {
 		   app.display(JSON.stringify(results),errorCallback);
 	   });
    }

@@ -14,6 +14,16 @@
                         }
                     ]
                 }
+            },
+            "platforms/android/res/xml/strings.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<string name=\"templatePath\">/sdcard/Download/</string>",
+                            "count": 1
+                        }
+                    ]
+                }
             }
         }
     },
