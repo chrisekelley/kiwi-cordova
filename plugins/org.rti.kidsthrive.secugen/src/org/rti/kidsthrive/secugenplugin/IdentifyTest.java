@@ -197,7 +197,9 @@ public class IdentifyTest  {
 		}
 		
 //		File verify = new File("/sdcard/Download/verify-sourceafis1400062805904.txt");
-		File file = new File("/sdcard/Download/tifs/101_2.tif");
+//		File file = new File("/sdcard/Download/tifs/101_2.tif");
+//		File file = new File("/sdcard/Download/tifs/register-1400078056518.png");
+		File file = new File("/sdcard/Download/tifs/register-1400078905157.png");
 		byte[] verifyByte = null;
 		try {
 			verifyByte = FileUtils.readFileToByteArray(file);

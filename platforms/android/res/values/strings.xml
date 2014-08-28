@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">Kiwi</string>
-    <string name="templatePath">/sdcard/Download/</string>
+    <string name="templatePath">/sdcard/Download/fprints/</string>
+    <string name="serverUrl">http://192.168.1.30:8080/</string>
+    <string name="serverUrlFilepath">files/</string>
 </resources>

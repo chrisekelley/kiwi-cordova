@@ -123,6 +123,9 @@
 <source-file src="src/sourceafis/meta/ParameterSet.java" target-dir="src/sourceafis/meta" />
 <source-file src="src/sourceafis/meta/ParameterValue.java" target-dir="src/sourceafis/meta" />
 <source-file src="libs/FDxSDKProAndroid.jar" target-dir="libs" />
+<source-file src="libs/httpclient-4.3.4.jar" target-dir="libs" />
+<source-file src="libs/httpmime-4.3.4.jar" target-dir="libs" />
+<source-file src="libs/httpcore-4.3.2.jar" target-dir="libs" />
 <source-file src="libs/commons-io-2.4.jar" target-dir="libs" />
 <source-file src="libs/armeabi" target-dir="libs" />
 </platform></plugin>

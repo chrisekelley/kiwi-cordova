@@ -23,6 +23,8 @@ import org.apache.cordova.Config;
 import org.apache.cordova.CordovaActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.os.Build;
 
 public class Kiwi extends CordovaActivity 
 {
@@ -38,6 +40,33 @@ public class Kiwi extends CordovaActivity
         // Set by <content src="index.html" /> in config.xml
         super.loadUrl(Config.getStartUrl());
         //super.loadUrl("file:///android_asset/www/index.html");
+    }
+
+     @Override
+    public void onReceivedError( int errorCode, String description, String failingUrl)
+    {
+        if (failingUrl.contains("#")) {
+            Log.v("LOG", "Config.getStartUrl():"+ Config.getStartUrl());
+            Log.v("LOG", "failing url:"+ failingUrl);
+            final int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+            if (sdkVersion > Build.VERSION_CODES.GINGERBREAD) {
+                String[] temp;
+                temp = failingUrl.split("#");
+                Log.v("LOG", "load page without internal link:"+ temp[0]);
+                super.loadUrl(temp[0]); // load page without internal link
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+
+                    e.printStackTrace();
+                }
+            }
+            Log.v("LOG", "try again failing url:"+ failingUrl);
+            super.loadUrl(failingUrl);  // try again
+        } else {
+             Log.v("LOG", "failing url does not contain #, loading regular url.");
+             super.loadUrl(Config.getStartUrl());
+        }
     }
 }
 

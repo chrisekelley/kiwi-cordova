@@ -12,28 +12,13 @@ public class SourceAfisUtils {
 		 * Use SourceAFIS to identify the fingerprint.
 		 * @param afis
 	 * @param props height and width of image.
-		 * kudos for 2d conversion: http://stackoverflow.com/q/18586813
+			 * kudos for 2d conversion: http://stackoverflow.com/q/18586813
 	 * @param database TODO
+	 * @param person Person to match
 		 */
-		public static boolean identify(AfisEngine afis, ScanProperties props, byte[] mRegisterImage, byte[] mVerifyImage, ArrayList<Person> database) {
+		public static boolean identify(AfisEngine afis, ScanProperties props, byte[] imageArray, ArrayList<Person> database, Person person) {
 	
-//			// seed the database with register
-//			Person register = generateTemplate(afis, props, mRegisterImage, "register-sourceafis" + System.currentTimeMillis() + ".txt");
-//	
-//			// Add person to database
-//			//			getDatabase().add(getPerson(1,mRegisterTemplate));
-//			database.add(register);
-			Person probe = generateTemplate(afis, props, mVerifyImage, "verify-sourceafis" + System.currentTimeMillis() + ".txt");
-			
-	//		/*giving dummy id -1 for probe*/
-	//		Person probe = null;
-	//		try {
-	//			probe = getPerson(-1,new byte[][]{mVerifyTemplate});
-	//		} catch (IOException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-			Iterable<Person> matches=afis.identify(probe, database);
+			Iterable<Person> matches=afis.identify(person, database);
 			
 			int i=0;
 			for(Person match:matches){

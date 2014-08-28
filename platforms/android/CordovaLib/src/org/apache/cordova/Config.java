@@ -20,21 +20,16 @@
 package org.apache.cordova;
 
 import java.io.IOException;
-
 import java.util.Locale;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.cordova.LOG;
-
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
-
 import android.content.res.XmlResourceParser;
 import android.graphics.Color;
-
 import android.util.Log;
 
 public class Config {
@@ -43,6 +38,8 @@ public class Config {
 
     private Whitelist whitelist = new Whitelist();
     private String startUrl;
+
+    private static String errorUrl;
 
     private static Config self = null;
 
@@ -156,6 +153,10 @@ public class Config {
                         boolean value = xml.getAttributeValue(null, "value").equals("true");
                         action.getIntent().putExtra(name, value);
                     }
+                    else if(name.equalsIgnoreCase("errorurl"))
+                    {
+                        errorUrl = xml.getAttributeValue(null, "value");
+                    }
                     else
                     {
                         String value = xml.getAttributeValue(null, "value");
@@ -204,6 +205,7 @@ public class Config {
      */
     public static void addWhiteListEntry(String origin, boolean subdomains) {
         if (self == null) {
+            Log.e(TAG, "Config was not initialised. Did you forget to Config.init(this)?");
             return;
         }
         self.whitelist.addWhiteListEntry(origin, subdomains);
@@ -217,6 +219,7 @@ public class Config {
      */
     public static boolean isUrlWhiteListed(String url) {
         if (self == null) {
+            Log.e(TAG, "Config was not initialised. Did you forget to Config.init(this)?");
             return false;
         }
         return self.whitelist.isUrlWhiteListed(url);
@@ -227,5 +230,9 @@ public class Config {
             return "file:///android_asset/www/index.html";
         }
         return self.startUrl;
+    }
+
+    public static String getErrorUrl() {
+        return errorUrl;
     }
 }
