@@ -11,6 +11,14 @@ To deploy to tablet:
 
     cordova run android
     
+## configuration
+    
+Change the url and paths in res/values/strings.xml
+
+    <string name="templatePath">/sdcard/Download/fprints/</string>
+    <string name="serverUrl">http://192.168.128.239:8080/</string>
+    <string name="serverUrlFilepath">files/</string>
+    
 ## Debugging
     
 Since the fingerprint scanner uses the device's USB port, you must use wifi debugging. Here are some useful commands:
@@ -18,7 +26,10 @@ Since the fingerprint scanner uses the device's USB port, you must use wifi debu
     adb kill-server      
     adb start-server   
     adb tcpip 5555
-    adb connect 192.168.0.101:5555
+    adb shell ip -f inet addr show wlan0  
+    adb connect 192.168.0.101
+    
+    ./installapp.sh
     
     
     
