@@ -11,7 +11,11 @@ To deploy to tablet:
 
     cordova run android
     
-## configuration
+## Updating the Secugen Plugin
+
+Use platforms/android/bakeapp.sh to refresh the plugin when you change it.
+
+## Configuration
     
 Change the url and paths in res/values/strings.xml
 

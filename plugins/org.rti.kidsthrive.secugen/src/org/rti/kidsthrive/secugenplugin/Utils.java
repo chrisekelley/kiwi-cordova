@@ -15,13 +15,19 @@ import java.net.URL;
 import org.apache.cordova.CallbackContext;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -29,6 +35,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 
 public class Utils {
@@ -98,6 +105,7 @@ public class Utils {
 	}
 
 	/**
+	 * Saves image to PNG format
 	 * @param callbackContext
 	 * @param b
 	 * @param fileName TODO
@@ -212,6 +220,34 @@ public class Utils {
 		
 		return responseBody;
 	}
+	
+	public static String post(JSONObject payload) throws IOException {
+		String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath();
+		Log.d(TAG, "urlServer: "+"    "+urlServer);
+		HttpClient client = new DefaultHttpClient();
+//		CloseableHttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(urlServer);
+		//passes the results to a string builder/entity
+	    StringEntity se = new StringEntity(payload.toString());
+
+	    //sets the post request as the resulting string
+	    post.setEntity(se);
+	    //sets a request header so the page receving the request
+	    //will know what to do with it
+	    post.setHeader("Accept", "application/json");
+	    post.setHeader("Content-type", "application/json");
+//	    String authorizationString = "Basic " + Base64.encodeToString(("chris" + ":" + "chris").getBytes(), Base64.DEFAULT); //this line is diffe
+//	    post.setHeader("Authorization", authorizationString);
+	    post.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials("chris", "chris"), "UTF-8", false));
+
+
+	    //Handles what is returned from the page 
+	    ResponseHandler<String> responseHandler = new BasicResponseHandler();
+	    String responseBody = client.execute(post, responseHandler);
+		se.consumeContent();
+		client.getConnectionManager().shutdown();
+		return responseBody;
+	}
 
 	// kudos: http://stunningco.de/2010/04/25/uploading-files-to-http-server-using-post-android-sdk/
 	public static String uploadOld(String filename) throws IOException {
@@ -291,6 +327,20 @@ public class Utils {
 
 		return String.valueOf(serverResponseCode);
 
+	}
+	
+	// kudos: http://stackoverflow.com/a/9855338
+	
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 
 }

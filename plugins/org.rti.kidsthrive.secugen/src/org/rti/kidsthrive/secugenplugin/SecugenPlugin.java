@@ -3,8 +3,10 @@ package org.rti.kidsthrive.secugenplugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.cordova.CallbackContext;
@@ -15,11 +17,15 @@ import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import SecuGen.FDxSDKPro.JSGFPLib;
 import SecuGen.FDxSDKPro.SGFDxDeviceName;
 import SecuGen.FDxSDKPro.SGFDxErrorCode;
 import SecuGen.FDxSDKPro.SGFDxTemplateFormat;
+import SecuGen.FDxSDKPro.SGFingerInfo;
+import SecuGen.FDxSDKPro.SGFingerPosition;
+import SecuGen.FDxSDKPro.SGImpressionType;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -387,6 +393,29 @@ public class SecugenPlugin extends CordovaPlugin {
         dwTimeEnd = System.currentTimeMillis();
         dwTimeElapsed = dwTimeEnd-dwTimeStart;
         debugMessage("GetImage() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
+        dwTimeStart = System.currentTimeMillis();
+        
+        // Create template from capture d image
+        sgfplib.GetMaxTemplateSize( mMaxTemplateSize);
+        byte[] minBuffer = new byte[ mMaxTemplateSize[0]] ;
+        // Set information about template
+        SGFingerInfo finger_info = new SGFingerInfo();
+//        int[] quality = new int[1];
+//        finger_info.FingerNumber = SGFingerPosition.SG_FINGPOS_UK ;
+//        finger_info.ImageQuality = quality[0] ;
+//        finger_info.ImpressionType = SGImpressionType.SG_IMPTYPE_LP;
+//        finger_info.ViewNumber = 1;
+        debugMessage("CreateTemplate() started \n");
+        for (int i=0; i< mRegisterTemplate.length; ++i)
+        	mRegisterTemplate[i] = 0;
+        result = sgfplib.CreateTemplate( finger_info , mRegisterImage, mRegisterTemplate );
+        dwTimeEnd = System.currentTimeMillis();
+        dwTimeElapsed = dwTimeEnd-dwTimeStart;
+        debugMessage("CreateTemplate() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
+        String templatefileName = "register.template-" + System.currentTimeMillis();
+        Utils.DumpFile(templatefileName, mRegisterTemplate);
+        final String templatePath = SecugenPlugin.getTemplatePath() + templatefileName;
+        
         Bitmap b = Bitmap.createBitmap(mImageWidth,mImageHeight, Bitmap.Config.ARGB_8888);
         byteBuf.put(mRegisterImage);
         int[] intbuffer = new int[mImageWidth*mImageHeight];
@@ -398,6 +427,31 @@ public class SecugenPlugin extends CordovaPlugin {
 //        mImageViewFingerprint.setImageBitmap(this.toGrayscale(b));  
         final String registrationFile = "register-" + System.currentTimeMillis();
 		final String outputFilename = Utils.saveImageFile(callbackContext, b, registrationFile);
+		
+		final JSONObject jo = new JSONObject();
+		UUID uuid = UUID.randomUUID();
+		String templateString = null;
+//		try {
+//			templateString = new String(mRegisterTemplate, "UTF-8");
+//		} catch (UnsupportedEncodingException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
+		
+		templateString = Utils.bytesToHex(mRegisterTemplate);
+		
+		try {
+			jo.put("Key", uuid.toString());
+			jo.put("Name", "Test CK");
+			jo.put("Template", templateString);
+			jo.put("Finger", 0);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+//		{"Key":"sample string 1","Template":"sample string 2","Finger":3}
+		debugMessage("Send to the server: : " + jo.toString());
+
         dwTimeStart = System.currentTimeMillis();  
         final String uploadMessage = "";
 			Thread thread = new Thread(new Runnable(){
@@ -405,7 +459,7 @@ public class SecugenPlugin extends CordovaPlugin {
 			    public void run() {
 			    	String uploadMessage = "";
 			        try {
-			        	uploadMessage = Utils.upload(outputFilename);
+			        	uploadMessage = Utils.post(jo);
 			        	PluginResult result = new PluginResult(PluginResult.Status.OK, uploadMessage);
 			        	result.setKeepCallback(true);
 						callbackContext.success("Scan uploaded: " + uploadMessage);
