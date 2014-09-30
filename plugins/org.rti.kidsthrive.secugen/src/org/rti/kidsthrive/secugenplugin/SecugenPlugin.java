@@ -4,11 +4,12 @@ package org.rti.kidsthrive.secugenplugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -46,6 +47,8 @@ public class SecugenPlugin extends CordovaPlugin {
 	private static String templatePath = "/sdcard/Download/fprints/";
 	private static String serverUrl = "";
 	private static String serverUrlFilepath = "";
+	private static String serverKey = "";
+	private static String templateFormat = "";
 	
 	// actions
     private static final String ACTION_REQUEST_PERMISSION = "requestPermission";
@@ -63,6 +66,7 @@ public class SecugenPlugin extends CordovaPlugin {
     private static final String CLEAR = "clear";
     private static final String COOLMETHOD = "coolMethod";
     private static final String REGISTER = "register";
+    private static final String IDENTIFY = "identify";
     private static final String CAPTURE = "capture";
     private static final String BLINK = "blink";
     private static final String VERIFY = "verify";
@@ -146,6 +150,15 @@ public class SecugenPlugin extends CordovaPlugin {
     	String serverUrl = context.getResources().getString(id);
     	System.out.println("serverUrl: " + serverUrl);
     	SecugenPlugin.setServerUrl(serverUrl);
+    	id = context.getResources().getIdentifier("serverKey", "string", this.cordova.getActivity().getPackageName());
+    	String serverKey = context.getResources().getString(id);
+    	System.out.println("serverKey: " + serverKey);
+    	SecugenPlugin.setServerKey(serverKey);
+    	id = context.getResources().getIdentifier("templateFormat", "string", this.cordova.getActivity().getPackageName());
+    	String templateFormat = context.getResources().getString(id);
+    	System.out.println("templateFormat: " + templateFormat);
+    	SecugenPlugin.setTemplateFormat(templateFormat);
+    	
     	id = context.getResources().getIdentifier("serverUrlFilepath", "string", this.cordova.getActivity().getPackageName());
     	System.out.println("serverUrlFilepath id: " + id);
     	String serverUrlFilepath = context.getResources().getString(id);
@@ -194,6 +207,18 @@ public class SecugenPlugin extends CordovaPlugin {
     		cordova.getActivity().runOnUiThread(new Runnable() {
     			public void run() {
     				register(callbackContext);
+    			}
+    		});
+    		return true;
+    		
+    	} else if (action.equals(IDENTIFY)) {
+    		
+    		//          listBondedDevices(callbackContext);
+    		//        	register(callbackContext);
+    		
+    		cordova.getActivity().runOnUiThread(new Runnable() {
+    			public void run() {
+    				identify(callbackContext);
     			}
     		});
     		return true;
@@ -349,9 +374,25 @@ public class SecugenPlugin extends CordovaPlugin {
 	    			debugMessage("Setting props: mImageWidth: " + mImageWidth + " mImageHeight: " + mImageHeight);
 	    			props = new ScanProperties(mImageWidth, mImageHeight);
 //	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_ISO19794);
-	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_SG400);
+//	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_SG400);
+	    			Field fieldName;
+					try {
+						fieldName = SGFDxTemplateFormat.class.getField(SecugenPlugin.getTemplateFormat());
+		    			short templateValue = fieldName.getShort(null);
+		    			debugMessage("templateValue: " + templateValue);
+						sgfplib.SetTemplateFormat(templateValue);
+					} catch (NoSuchFieldException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	    			sgfplib.GetMaxTemplateSize(mMaxTemplateSize);
-	    			debugMessage("TEMPLATE_FORMAT_SG400 SIZE: " + mMaxTemplateSize[0] + "\n");
+	    			debugMessage("mMaxTemplateSize: " + mMaxTemplateSize[0] + "\n");
 	    			mRegisterTemplate = new byte[mMaxTemplateSize[0]];
 	    			mVerifyTemplate = new byte[mMaxTemplateSize[0]];
 	    			sgfplib.writeData((byte)5, (byte)1);
@@ -373,14 +414,33 @@ public class SecugenPlugin extends CordovaPlugin {
     
     private void register(final CallbackContext callbackContext) {
         debugMessage("Clicked REGISTER\n");
-        if (mRegisterImage != null)
+        int[] templateSize = captureImageTemplate();
+//		UUID uuid = UUID.randomUUID();
+		String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Enroll";
+		buildUploadMessage(callbackContext, templateSize, urlServer);
+        createImageFile(callbackContext);
+    }
+    
+    private void identify(final CallbackContext callbackContext) {
+    	debugMessage("Clicked identify\n");
+    	int[] templateSize = captureImageTemplate();
+//		UUID uuid = UUID.randomUUID();
+    	String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Identify";
+    	buildUploadMessage(callbackContext, templateSize, urlServer);
+    	createImageFile(callbackContext);
+    }
+
+	/**
+	 * @return
+	 */
+	public int[] captureImageTemplate() {
+		if (mRegisterImage != null)
         	mRegisterImage = null;
         mRegisterImage = new byte[mImageWidth*mImageHeight];
 //    	this.mCheckBoxMatched.setChecked(false);
-        ByteBuffer byteBuf = ByteBuffer.allocate(mImageWidth*mImageHeight);
         dwTimeStart = System.currentTimeMillis();          
         long result = sgfplib.GetImage(mRegisterImage);
-        Utils.DumpFile("register.raw", mRegisterImage);
+        Utils.DumpFile("register" + System.currentTimeMillis() +".raw", mRegisterImage);
         SecuGen.FDxSDKPro.SGDeviceInfoParam deviceInfo = new SecuGen.FDxSDKPro.SGDeviceInfoParam();
 		sgfplib.GetDeviceInfo(deviceInfo);
         mImageWidth = deviceInfo.imageWidth;
@@ -395,56 +455,42 @@ public class SecugenPlugin extends CordovaPlugin {
         debugMessage("GetImage() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
         dwTimeStart = System.currentTimeMillis();
         
-        // Create template from capture d image
-        sgfplib.GetMaxTemplateSize( mMaxTemplateSize);
-        byte[] minBuffer = new byte[ mMaxTemplateSize[0]] ;
-        // Set information about template
+        // Create template from captured image
         SGFingerInfo finger_info = new SGFingerInfo();
-//        int[] quality = new int[1];
-//        finger_info.FingerNumber = SGFingerPosition.SG_FINGPOS_UK ;
-//        finger_info.ImageQuality = quality[0] ;
-//        finger_info.ImpressionType = SGImpressionType.SG_IMPTYPE_LP;
-//        finger_info.ViewNumber = 1;
         debugMessage("CreateTemplate() started \n");
         for (int i=0; i< mRegisterTemplate.length; ++i)
         	mRegisterTemplate[i] = 0;
         result = sgfplib.CreateTemplate( finger_info , mRegisterImage, mRegisterTemplate );
+        int[] templateSize = new int[1];
+        sgfplib.GetTemplateSize(mRegisterTemplate, templateSize);
+        debugMessage("templateSize: " + templateSize[0]);
         dwTimeEnd = System.currentTimeMillis();
         dwTimeElapsed = dwTimeEnd-dwTimeStart;
         debugMessage("CreateTemplate() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
-        String templatefileName = "register.template-" + System.currentTimeMillis();
+        String templatefileName = "register.template-" + System.currentTimeMillis() + ".txt";
         Utils.DumpFile(templatefileName, mRegisterTemplate);
         final String templatePath = SecugenPlugin.getTemplatePath() + templatefileName;
-        
-        Bitmap b = Bitmap.createBitmap(mImageWidth,mImageHeight, Bitmap.Config.ARGB_8888);
-        byteBuf.put(mRegisterImage);
-        int[] intbuffer = new int[mImageWidth*mImageHeight];
-        for (int i=0; i<intbuffer.length; ++i)
-        	intbuffer[i] = (int) mRegisterImage[i];
-        b.setPixels(intbuffer, 0, mImageWidth, 0, 0, mImageWidth, mImageHeight); 
-        ScanProperties props = createScanProperties(b);
-        //DEBUG Log.d(TAG, "Show Register image");
-//        mImageViewFingerprint.setImageBitmap(this.toGrayscale(b));  
-        final String registrationFile = "register-" + System.currentTimeMillis();
-		final String outputFilename = Utils.saveImageFile(callbackContext, b, registrationFile);
+		return templateSize;
+	}
+
+	/**
+	 * @param callbackContext
+	 * @param templateSize
+	 * @param url TODO
+	 */
+	public void buildUploadMessage(final CallbackContext callbackContext,
+			int[] templateSize, final String url) {
+		String templateString;
+		byte[] newTemplate = Arrays.copyOfRange(mRegisterTemplate, 0, templateSize[0]);
+		templateString = Utils.encodeHexToString(newTemplate, Utils.DIGITS_UPPER);
+		Log.d(TAG, "templateString: " + templateString);
 		
 		final JSONObject jo = new JSONObject();
-		UUID uuid = UUID.randomUUID();
-		String templateString = null;
-//		try {
-//			templateString = new String(mRegisterTemplate, "UTF-8");
-//		} catch (UnsupportedEncodingException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//		}
-		
-		templateString = Utils.bytesToHex(mRegisterTemplate);
-		
 		try {
-			jo.put("Key", uuid.toString());
+			jo.put("Key", SecugenPlugin.getServerKey());
 			jo.put("Name", "Test CK");
 			jo.put("Template", templateString);
-			jo.put("Finger", 0);
+			jo.put("Finger", 1);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -457,16 +503,18 @@ public class SecugenPlugin extends CordovaPlugin {
 			Thread thread = new Thread(new Runnable(){
 			    @Override
 			    public void run() {
-			    	String uploadMessage = "";
+			    	JSONObject serviceResponse = null;
 			        try {
-			        	uploadMessage = Utils.post(jo);
-			        	PluginResult result = new PluginResult(PluginResult.Status.OK, uploadMessage);
+			        	serviceResponse = Utils.post(jo, url);
+			        	String serviceResponseStr = serviceResponse.toString();
+//			        	Log.d(TAG, "serviceResponseStr: " + serviceResponseStr);
+						PluginResult result = new PluginResult(PluginResult.Status.OK, serviceResponseStr);
 			        	result.setKeepCallback(true);
-						callbackContext.success("Scan uploaded: " + uploadMessage);
+//						callbackContext.success(uploadMessage);
 			        	callbackContext.sendPluginResult(result);
 			        } catch (Exception e) {
 			            e.printStackTrace();
-			            callbackContext.error("Upload Error: " + uploadMessage + " Error: " + e);
+			            callbackContext.error("Upload Error: " + serviceResponse + " Error: " + e);
 			        }
 			    }
 			});
@@ -474,7 +522,24 @@ public class SecugenPlugin extends CordovaPlugin {
 		dwTimeEnd = System.currentTimeMillis();
         dwTimeElapsed = dwTimeEnd-dwTimeStart;
         debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
-    }
+	}
+
+	/**
+	 * @param callbackContext
+	 */
+	public void createImageFile(final CallbackContext callbackContext) {
+        ByteBuffer byteBuf = ByteBuffer.allocate(mImageWidth*mImageHeight);
+		Bitmap b = Bitmap.createBitmap(mImageWidth,mImageHeight, Bitmap.Config.ARGB_8888);
+        byteBuf.put(mRegisterImage);
+        int[] intbuffer = new int[mImageWidth*mImageHeight];
+        for (int i=0; i<intbuffer.length; ++i)
+        	intbuffer[i] = (int) mRegisterImage[i];
+        b.setPixels(intbuffer, 0, mImageWidth, 0, 0, mImageWidth, mImageHeight); 
+        //DEBUG Log.d(TAG, "Show Register image");
+//        mImageViewFingerprint.setImageBitmap(this.toGrayscale(b));  
+        final String registrationFile = "register-" + System.currentTimeMillis();
+		final String outputFilename = Utils.saveImageFile(callbackContext, b, registrationFile);
+	}
 
 	/**
 	 * @param b
@@ -682,6 +747,22 @@ public class SecugenPlugin extends CordovaPlugin {
 
 	public static void setServerUrlFilepath(String serverUrlFilepath) {
 		SecugenPlugin.serverUrlFilepath = serverUrlFilepath;
+	}
+
+	public static String getServerKey() {
+		return serverKey;
+	}
+
+	public static void setServerKey(String serverKey) {
+		SecugenPlugin.serverKey = serverKey;
+	}
+
+	public static String getTemplateFormat() {
+		return templateFormat;
+	}
+
+	public static void setTemplateFormat(String templateFormat) {
+		SecugenPlugin.templateFormat = templateFormat;
 	}
 
 }

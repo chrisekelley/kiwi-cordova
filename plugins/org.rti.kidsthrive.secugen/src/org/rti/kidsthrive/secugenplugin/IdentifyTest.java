@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -18,9 +19,14 @@ import org.robolectric.RobolectricTestRunner;
 
 import sourceafis.simple.AfisEngine;
 import sourceafis.simple.Person;
+import SecuGen.FDxSDKPro.JSGFPLib;
+import SecuGen.FDxSDKPro.SGFingerInfo;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 //import android.test.AndroidTestCase;
+import android.hardware.usb.UsbManager;
+import android.util.Log;
 
 //public class IdentifyTest extends AndroidTestCase {
 
@@ -144,6 +150,37 @@ public class IdentifyTest  {
 				isMatched = true;
 			}
 			assertTrue("Register and verify templates match.", isMatched);
+	}
+	
+	@Test
+	public final void testTemplateConcat() {
+		byte[] fileByte = null;
+		String filePath = "/Users/chrisk/Downloads/register.template-1411727377663.txt";
+		File file = new File(filePath);
+		try {
+			fileByte = FileUtils.readFileToByteArray(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int templateSize = 96;
+		int fileSize = fileByte.length;
+		System.out.println("fileByte: " + fileSize);
+		byte[] newTemplate = Arrays.copyOfRange(fileByte, 0, templateSize);
+		System.out.println("newTemplate: " + newTemplate.length);
+		String templateString = Utils.encodeHexToString(newTemplate, Utils.DIGITS_UPPER);
+		System.out.println("templateString: " + templateString);
+//		SGFingerInfo finger_info = new SGFingerInfo();
+//		byte[] mRegisterTemplate;
+//		for (int i=0; i< mRegisterTemplate.length; ++i)
+//        	mRegisterTemplate[i] = 0;
+//		JSGFPLib sgfplib = new JSGFPLib((UsbManager)context.getSystemService(Context.USB_SERVICE));
+//		byte[] mRegisterImage = new byte[mImageWidth*mImageHeight];
+//        sgfplib.CreateTemplate( finger_info , mRegisterImage, mRegisterTemplate );
+//        int[] templateSize = null;
+//        sgfplib.GetTemplateSize(mRegisterTemplate, templateSize);
+
+		
 	}
 	
 	@Test

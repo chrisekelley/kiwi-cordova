@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="templatePath">/sdcard/Download/fprints/</string>
-    <string name="serverUrl">http://simfant.simprints.com/</string>
+    <string name="serverUrl">http://somewhere.com/</string>
     <string name="serverUrlFilepath">api/Person/Enroll</string>
+    <string name="serverKey">test</string>
 </resources>

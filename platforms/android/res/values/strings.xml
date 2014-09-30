@@ -3,5 +3,7 @@
     <string name="app_name">Kiwi</string>
     <string name="templatePath">/sdcard/Download/fprints/</string>
     <string name="serverUrl">http://simfant.simprints.com/</string>
-    <string name="serverUrlFilepath">api/Person/Enroll</string>
+    <string name="serverUrlFilepath">api/Person/</string>
+    <string name="serverKey">HH8XGFYSDU9QGZ833</string>
+    <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
 </resources>

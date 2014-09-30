@@ -16,6 +16,16 @@ I have not yet uploaded this to NPM, so you must clone this project and install 
     rm -rf ../../plugins/org.rti.kidsthrive.secugen
     cp -Rf cordova/plugins/org.rti.kidsthrive.secugen ../../plugins    
 
+# Configuration
+
+In your Cordova project's platforms/android/res/values/strings.xml, set the following values:
+
+    <string name="templatePath">/sdcard/Download/fprints/</string>
+    <string name="serverUrl">http://somewhere.com/</string>
+    <string name="serverUrlFilepath">api/Person/Enroll</string>
+    <string name="serverKey">authenticationKey</string>
+    <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
+
 # Development
 
 Code for updating the plugin in your Cordova project:

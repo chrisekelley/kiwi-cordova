@@ -6,6 +6,9 @@ exports.coolMethod = function(arg0, success, error) {
 exports.register = function(success, error) {
 	exec(success, error, "SecugenPlugin", "register", []);
 };
+exports.identify = function(success, error) {
+	exec(success, error, "SecugenPlugin", "identify", []);
+};
 exports.capture = function(success, error) {
 	exec(success, error, "SecugenPlugin", "capture", []);
 };
