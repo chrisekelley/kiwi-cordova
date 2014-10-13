@@ -19,6 +19,7 @@
 <source-file src="src/org/rti/kidsthrive/secugenplugin/ScanProperties.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
 <source-file src="src/org/rti/kidsthrive/secugenplugin/SourceAfisUtils.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
 <source-file src="src/org/rti/kidsthrive/secugenplugin/Utils.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/UsbBroadcastReceiver.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
 <source-file src="src/sourceafis/simple/AfisEngine.java" target-dir="src/sourceafis/simple" />
 <source-file src="src/sourceafis/simple/Finger.java" target-dir="src/sourceafis/simple" />
 <source-file src="src/sourceafis/simple/Fingerprint.java" target-dir="src/sourceafis/simple" />

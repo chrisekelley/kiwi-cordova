@@ -45,6 +45,10 @@ Since the fingerprint scanner uses the device's USB port, you must use wifi debu
     
     ./installapp.sh
     
+Here's a one-liner to get the ip address (thanks http://unix.stackexchange.com/a/87470):
+
+    adb shell ip -f inet addr show wlan0 | grep -Po 'inet \K[\d.]+' 
+    
 The platforms/android/bakeapp.sh script is also useful during development when removing/installing the plugin.
 
     

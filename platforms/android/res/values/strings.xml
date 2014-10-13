@@ -6,4 +6,6 @@
     <string name="serverUrlFilepath">api/Person/</string>
     <string name="serverKey">HH8XGFYSDU9QGZ833</string>
     <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
+    <string name="APP_VERSION">1</string>
+    <string name="WIPE_CACHE">0</string>
 </resources>

@@ -3,12 +3,9 @@ package org.rti.kidsthrive.secugenplugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.UUID;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -25,8 +22,6 @@ import SecuGen.FDxSDKPro.SGFDxDeviceName;
 import SecuGen.FDxSDKPro.SGFDxErrorCode;
 import SecuGen.FDxSDKPro.SGFDxTemplateFormat;
 import SecuGen.FDxSDKPro.SGFingerInfo;
-import SecuGen.FDxSDKPro.SGFingerPosition;
-import SecuGen.FDxSDKPro.SGImpressionType;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -184,14 +179,20 @@ public class SecugenPlugin extends CordovaPlugin {
     	boolean validAction = true;
 
     	//USB Permissions
-    	mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
-    	IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-    	context.registerReceiver(mUsbReceiver, filter);
+//    	mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+//    	IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+//    	context.registerReceiver(mUsbReceiver, filter);
 
     	// request permission
     	if (action.equals(ACTION_REQUEST_PERMISSION)) {
     		debugMessage("action: " + action);
-    		this.requestPermission(callbackContext);
+//    		this.requestPermission(callbackContext);
+//    		return true;
+//    		cordova.getActivity().runOnUiThread(new Runnable() {
+//    			public void run() {
+    				requestPermission(callbackContext);
+//    			}
+//    		});
     		return true;
     	} else if (action.equals(COOLMETHOD)) {
     		String message = args.getString(0);
@@ -326,7 +327,7 @@ public class SecugenPlugin extends CordovaPlugin {
 	/**
 	 * @param usbDevice
 	 */
-	public void requestPermission(final CallbackContext callbackContext) {
+	public void requestPermissionOld(final CallbackContext callbackContext) {
 		debugMessage("requestPermission.");
 		
 		debugMessage("Getting ACTION_USB_PERMISSION \n");
@@ -357,45 +358,13 @@ public class SecugenPlugin extends CordovaPlugin {
 			}
 			cordova.getThreadPool().execute(new Runnable() {
 	            public void run() {
-	            	long error;
 //	            	sgfplib.GetUsbManager().requestPermission(usbDevice, mPermissionIntent);
 	            	// get UsbManager from Android
 	                manager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
 	             // finally ask for the permission
 	                debugMessage("Requesting Permission from UsbManager.");
                     manager.requestPermission(usbDevice, mPermissionIntent);
-	    			error = sgfplib.OpenDevice(0);
-	    			debugMessage("OpenDevice() ret: " + error + "\n");
-	    			SecuGen.FDxSDKPro.SGDeviceInfoParam deviceInfo = new SecuGen.FDxSDKPro.SGDeviceInfoParam();
-	    			error = sgfplib.GetDeviceInfo(deviceInfo);
-	    			debugMessage("GetDeviceInfo() ret: " + error + "\n");
-	    			mImageWidth = deviceInfo.imageWidth;
-	    			mImageHeight= deviceInfo.imageHeight;
-	    			debugMessage("Setting props: mImageWidth: " + mImageWidth + " mImageHeight: " + mImageHeight);
-	    			props = new ScanProperties(mImageWidth, mImageHeight);
-//	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_ISO19794);
-//	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_SG400);
-	    			Field fieldName;
-					try {
-						fieldName = SGFDxTemplateFormat.class.getField(SecugenPlugin.getTemplateFormat());
-		    			short templateValue = fieldName.getShort(null);
-		    			debugMessage("templateValue: " + templateValue);
-						sgfplib.SetTemplateFormat(templateValue);
-					} catch (NoSuchFieldException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	    			sgfplib.GetMaxTemplateSize(mMaxTemplateSize);
-	    			debugMessage("mMaxTemplateSize: " + mMaxTemplateSize[0] + "\n");
-	    			mRegisterTemplate = new byte[mMaxTemplateSize[0]];
-	    			mVerifyTemplate = new byte[mMaxTemplateSize[0]];
-	    			sgfplib.writeData((byte)5, (byte)1);
+	            	initDeviceSettings();
 	    			callbackContext.success("Fingerprint scanner initialised.");
 
 	            }
@@ -403,6 +372,85 @@ public class SecugenPlugin extends CordovaPlugin {
 			
 		}
 	}
+	
+	 /**
+     * Request permission the the user for the app to use the USB/serial port
+     * @param callbackContext the cordova {@link CallbackContext}
+     */
+    private void requestPermission(final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                // get UsbManager from Android
+                manager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
+//                UsbSerialProber prober;
+//
+//                if (opts.has("vid") && opts.has("pid")) {
+//                    ProbeTable customTable = new ProbeTable();
+//                    Object o_vid = opts.opt("vid"); //can be an integer Number or a hex String
+//                    Object o_pid = opts.opt("pid"); //can be an integer Number or a hex String
+//                    int vid = o_vid instanceof Number ? ((Number) o_vid).intValue() : Integer.parseInt((String) o_vid,16);
+//                    int pid = o_pid instanceof Number ? ((Number) o_pid).intValue() : Integer.parseInt((String) o_pid,16);
+//                    customTable.addProduct(vid, pid, CdcAcmSerialDriver.class); //vid and pid are now integers
+//
+//                    prober = new UsbSerialProber(customTable);
+//
+//                }
+//                else {
+//                    // find all available drivers from attached devices.
+//                    prober = UsbSerialProber.getDefaultProber();
+//                }
+//
+//                List<UsbSerialDriver> availableDrivers = prober.findAllDrivers(manager);
+                
+                sgfplib = new JSGFPLib((UsbManager)context.getSystemService(Context.USB_SERVICE));
+//            	this.mCheckBoxSCEnabled.setChecked(true);
+        		debugMessage("jnisgfplib version: " + sgfplib.Version() + "\n");
+        		mLed = false;
+        		//		        	sgfplib.writeData((byte)5, (byte)0);
+        		
+        		long error = sgfplib.Init( SGFDxDeviceName.SG_DEV_AUTO);
+        		if (error != SGFDxErrorCode.SGFDX_ERROR_NONE){
+        			if (error == SGFDxErrorCode.SGFDX_ERROR_DEVICE_NOT_FOUND) {
+        				String message = "Either a fingerprint device is not attached or the attached fingerprint device is not supported.";
+        				debugMessage(message);
+        				callbackContext.error(message);
+        			} else {
+        				String message = "Fingerprint device initialization failed!";
+        				debugMessage(message);     
+        				callbackContext.error(message);
+        			}
+        		}
+//                if (!availableDrivers.isEmpty()) {
+        		else {
+                    // get the first one as there is a high chance that there is no more than one usb device attached to your android
+//                    driver = availableDrivers.get(0);
+//                    UsbDevice device = driver.getDevice();
+        			UsbDevice usbDevice = sgfplib.GetUsbDevice();
+        			if (usbDevice == null){
+        				String message = "SDU04P or SDU03P fingerprint sensor not found!";
+        				debugMessage(message);
+        				callbackContext.error(message);
+        			}
+                    // create the intent that will be used to get the permission
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(cordova.getActivity(), 0, new Intent(UsbBroadcastReceiver.USB_PERMISSION), 0);
+                    // and a filter on the permission we ask
+                    IntentFilter filter = new IntentFilter();
+                    filter.addAction(UsbBroadcastReceiver.USB_PERMISSION);
+                    // this broadcast receiver will handle the permission results
+                    UsbBroadcastReceiver usbReceiver = new UsbBroadcastReceiver(callbackContext, cordova.getActivity());
+                    cordova.getActivity().registerReceiver(usbReceiver, filter);
+                    // finally ask for the permission
+                    manager.requestPermission(usbDevice, pendingIntent);
+                    initDeviceSettings();
+                }
+//                else {
+//                    // no available drivers
+//                    Log.d(TAG, "No device found!");
+//                    callbackContext.error("No device found!");
+//                }
+            }
+        });
+    }
 
     private void coolMethod(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
@@ -414,26 +462,49 @@ public class SecugenPlugin extends CordovaPlugin {
     
     private void register(final CallbackContext callbackContext) {
         debugMessage("Clicked REGISTER\n");
-        int[] templateSize = captureImageTemplate();
-//		UUID uuid = UUID.randomUUID();
-		String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Enroll";
-		buildUploadMessage(callbackContext, templateSize, urlServer);
-        createImageFile(callbackContext);
+        int[] templateSize;
+		try {
+			try {
+				templateSize = captureImageTemplate();
+				Log.d(TAG, "templateSize: " + templateSize.toString());
+				if (templateSize == new int[0]) {
+					Log.d(TAG, "captureImageTemplate Error: templateSize is 0 sized.");
+					callbackContext.error("captureImageTemplate Error: templateSize is 0 sized.");
+				}
+				String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Enroll";
+				buildUploadMessage(callbackContext, templateSize, urlServer);
+		        createImageFile(callbackContext);
+			} catch (Exception e) {
+				Log.d(TAG, "Caught from the exception: captureImageTemplate Error" + e);
+				callbackContext.error("captureImageTemplate Error: " + e);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			callbackContext.error("captureImageTemplate Error: " + e);
+		}
     }
     
     private void identify(final CallbackContext callbackContext) {
     	debugMessage("Clicked identify\n");
-    	int[] templateSize = captureImageTemplate();
-//		UUID uuid = UUID.randomUUID();
-    	String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Identify";
-    	buildUploadMessage(callbackContext, templateSize, urlServer);
-    	createImageFile(callbackContext);
+    	int[] templateSize;
+		try {
+			templateSize = captureImageTemplate();
+//			UUID uuid = UUID.randomUUID();
+	    	String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Identify";
+	    	buildUploadMessage(callbackContext, templateSize, urlServer);
+	    	createImageFile(callbackContext);
+		} catch (Exception e) {
+			callbackContext.error("captureImageTemplate Error: " + e);
+		}
+
     }
 
 	/**
 	 * @return
+	 * @throws Exception 
 	 */
-	public int[] captureImageTemplate() {
+	public int[] captureImageTemplate() throws Exception {
 		if (mRegisterImage != null)
         	mRegisterImage = null;
         mRegisterImage = new byte[mImageWidth*mImageHeight];
@@ -467,9 +538,14 @@ public class SecugenPlugin extends CordovaPlugin {
         dwTimeEnd = System.currentTimeMillis();
         dwTimeElapsed = dwTimeEnd-dwTimeStart;
         debugMessage("CreateTemplate() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
-        String templatefileName = "register.template-" + System.currentTimeMillis() + ".txt";
-        Utils.DumpFile(templatefileName, mRegisterTemplate);
-        final String templatePath = SecugenPlugin.getTemplatePath() + templatefileName;
+        if (result == 105) {
+        	debugMessage("Error: Template Extraction failed! " );
+        	templateSize = new int[0];
+//        	throw new Exception("Error: Template Extraction failed" );
+        }
+//        String templatefileName = "register.template-" + System.currentTimeMillis() + ".txt";
+//        Utils.DumpFile(templatefileName, mRegisterTemplate);
+//        final String templatePath = SecugenPlugin.getTemplatePath() + templatefileName;
 		return templateSize;
 	}
 
@@ -498,30 +574,35 @@ public class SecugenPlugin extends CordovaPlugin {
 //		{"Key":"sample string 1","Template":"sample string 2","Finger":3}
 		debugMessage("Send to the server: : " + jo.toString());
 
-        dwTimeStart = System.currentTimeMillis();  
+        
         final String uploadMessage = "";
 			Thread thread = new Thread(new Runnable(){
 			    @Override
 			    public void run() {
 			    	JSONObject serviceResponse = null;
 			        try {
+			        	dwTimeStart = System.currentTimeMillis();  
 			        	serviceResponse = Utils.post(jo, url);
 			        	String serviceResponseStr = serviceResponse.toString();
-//			        	Log.d(TAG, "serviceResponseStr: " + serviceResponseStr);
+			        	Log.d(TAG, "Sending serviceResponseStr to PluginResult: " + serviceResponseStr);
 						PluginResult result = new PluginResult(PluginResult.Status.OK, serviceResponseStr);
 			        	result.setKeepCallback(true);
 //						callbackContext.success(uploadMessage);
 			        	callbackContext.sendPluginResult(result);
+			        	dwTimeEnd = System.currentTimeMillis();
+			            dwTimeElapsed = dwTimeEnd-dwTimeStart;
+			            debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
 			        } catch (Exception e) {
 			            e.printStackTrace();
 			            callbackContext.error("Upload Error: " + serviceResponse + " Error: " + e);
+			            dwTimeEnd = System.currentTimeMillis();
+			            dwTimeElapsed = dwTimeEnd-dwTimeStart;
+			            debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
 			        }
 			    }
 			});
 			thread.start(); 
-		dwTimeEnd = System.currentTimeMillis();
-        dwTimeElapsed = dwTimeEnd-dwTimeStart;
-        debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
+		
 	}
 
 	/**
@@ -662,7 +743,7 @@ public class SecugenPlugin extends CordovaPlugin {
     }
 
     //This broadcast receiver is necessary to get user permissions to access the attached USB device
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "org.rti.kidsthrive.secugenplugin.USB_PERMISSION";
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
     	public void onReceive(Context context, Intent intent) {
     		String action = intent.getAction();
@@ -701,13 +782,13 @@ public class SecugenPlugin extends CordovaPlugin {
     @Override
     public void onDestroy() {
         debugMessage("onDestroy.");
-    	try {
-    		Log.e(TAG, "unregisterReceiver mUsbReceiver");
-			context.unregisterReceiver(mUsbReceiver);
-		} catch (Exception e1) {
-			Log.e(TAG, "", e1);
-		}  finally {
-		}
+//    	try {
+//    		Log.e(TAG, "unregisterReceiver mUsbReceiver");
+//			context.unregisterReceiver(mUsbReceiver);
+//		} catch (Exception e1) {
+//			Log.e(TAG, "", e1);
+//		}  finally {
+//		}
     	sgfplib.CloseDevice();
     	mRegisterImage = null;
     	mVerifyImage = null;
@@ -717,6 +798,45 @@ public class SecugenPlugin extends CordovaPlugin {
         super.onDestroy();
     }
     
+/**
+	 * 
+	 */
+	public void initDeviceSettings() {
+		long error;
+		error = sgfplib.OpenDevice(0);
+		debugMessage("OpenDevice() ret: " + error + "\n");
+		SecuGen.FDxSDKPro.SGDeviceInfoParam deviceInfo = new SecuGen.FDxSDKPro.SGDeviceInfoParam();
+		error = sgfplib.GetDeviceInfo(deviceInfo);
+		debugMessage("GetDeviceInfo() ret: " + error + "\n");
+		mImageWidth = deviceInfo.imageWidth;
+		mImageHeight= deviceInfo.imageHeight;
+		debugMessage("Setting props: mImageWidth: " + mImageWidth + " mImageHeight: " + mImageHeight);
+		props = new ScanProperties(mImageWidth, mImageHeight);
+//	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_ISO19794);
+//	    			sgfplib.SetTemplateFormat(SGFDxTemplateFormat.TEMPLATE_FORMAT_SG400);
+		Field fieldName;
+		try {
+			fieldName = SGFDxTemplateFormat.class.getField(SecugenPlugin.getTemplateFormat());
+			short templateValue = fieldName.getShort(null);
+			debugMessage("templateValue: " + templateValue);
+			sgfplib.SetTemplateFormat(templateValue);
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		sgfplib.GetMaxTemplateSize(mMaxTemplateSize);
+		debugMessage("mMaxTemplateSize: " + mMaxTemplateSize[0] + "\n");
+		mRegisterTemplate = new byte[mMaxTemplateSize[0]];
+		mVerifyTemplate = new byte[mMaxTemplateSize[0]];
+		sgfplib.writeData((byte)5, (byte)1);
+	}
+
 //    public static ArrayList<Person> getDatabase() {
 //		return database;
 //	}
