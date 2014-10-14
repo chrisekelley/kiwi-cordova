@@ -479,6 +479,7 @@ public class SecugenPlugin extends CordovaPlugin {
 				callbackContext.error("captureImageTemplate Error: " + e);
 			}
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			callbackContext.error("captureImageTemplate Error: " + e);
 		}
