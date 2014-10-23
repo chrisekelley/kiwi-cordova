@@ -9,3 +9,4 @@ ant-build
 ant-gen
 node_modules
 www/
+platforms/android/out/
