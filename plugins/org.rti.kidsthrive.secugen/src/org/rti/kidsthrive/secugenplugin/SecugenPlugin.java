@@ -121,8 +121,8 @@ public class SecugenPlugin extends CordovaPlugin {
 //			InputStream rawResource = context.getResources().getValue("");
 ////					openRawResource(R.values.strings);
 //			properties.load(rawResource);
-//			System.out.println("The properties are now loaded");
-//			System.out.println("properties: " + properties);
+//			LOG.d(TAG,"The properties are now loaded");
+//			LOG.d(TAG,"properties: " + properties);
 //		} catch (Resources.NotFoundException e) {
 //			System.err.println("Did not find raw resource: " + e);
 //		} catch (IOException e) {
@@ -130,34 +130,34 @@ public class SecugenPlugin extends CordovaPlugin {
 //		}
 	    
 //	    	String templatePathTemp = properties.getProperty("templatePath");
-//		System.out.println("context.getApplicationInfo().className: " + context.getApplicationInfo().className);
-		System.out.println("this.cordova.getActivity().getPackageName(): " + this.cordova.getActivity().getPackageName());
+//		LOG.d(TAG,"context.getApplicationInfo().className: " + context.getApplicationInfo().className);
+		LOG.d(TAG,"this.cordova.getActivity().getPackageName(): " + this.cordova.getActivity().getPackageName());
 //		int id = context.getResources().getIdentifier("strings", "values", this.cordova.getActivity().getPackageName());
 		int id = context.getResources().getIdentifier("templatePath", "string", this.cordova.getActivity().getPackageName());
-    	System.out.println("templatePath id: " + id);
+    	LOG.d(TAG,"templatePath id: " + id);
     	String translatedValue = context.getResources().getString(id);
-    	System.out.println("translatedValue: " + translatedValue);
+    	LOG.d(TAG,"translatedValue: " + translatedValue);
     	File templatePathFile = new File(templatePath);
     	templatePathFile.mkdirs();
     	SecugenPlugin.setTemplatePath(translatedValue);
     	id = context.getResources().getIdentifier("serverUrl", "string", this.cordova.getActivity().getPackageName());
-    	System.out.println("serverUrl id: " + id);
+    	LOG.d(TAG,"serverUrl id: " + id);
     	String serverUrl = context.getResources().getString(id);
-    	System.out.println("serverUrl: " + serverUrl);
+    	LOG.d(TAG,"serverUrl: " + serverUrl);
     	SecugenPlugin.setServerUrl(serverUrl);
     	id = context.getResources().getIdentifier("serverKey", "string", this.cordova.getActivity().getPackageName());
     	String serverKey = context.getResources().getString(id);
-    	System.out.println("serverKey: " + serverKey);
+    	LOG.d(TAG,"serverKey: " + serverKey);
     	SecugenPlugin.setServerKey(serverKey);
     	id = context.getResources().getIdentifier("templateFormat", "string", this.cordova.getActivity().getPackageName());
     	String templateFormat = context.getResources().getString(id);
-    	System.out.println("templateFormat: " + templateFormat);
+    	LOG.d(TAG,"templateFormat: " + templateFormat);
     	SecugenPlugin.setTemplateFormat(templateFormat);
     	
     	id = context.getResources().getIdentifier("serverUrlFilepath", "string", this.cordova.getActivity().getPackageName());
-    	System.out.println("serverUrlFilepath id: " + id);
+    	LOG.d(TAG,"serverUrlFilepath id: " + id);
     	String serverUrlFilepath = context.getResources().getString(id);
-    	System.out.println("serverUrlFilepath: " + serverUrlFilepath);
+    	LOG.d(TAG,"serverUrlFilepath: " + serverUrlFilepath);
     	SecugenPlugin.setServerUrlFilepath(serverUrlFilepath);
 	}
 	
@@ -185,7 +185,7 @@ public class SecugenPlugin extends CordovaPlugin {
 
     	// request permission
     	if (action.equals(ACTION_REQUEST_PERMISSION)) {
-    		debugMessage("action: " + action);
+//    		debugMessage("action: " + action);
 //    		this.requestPermission(callbackContext);
 //    		return true;
 //    		cordova.getActivity().runOnUiThread(new Runnable() {
@@ -466,7 +466,7 @@ public class SecugenPlugin extends CordovaPlugin {
 		try {
 			try {
 				templateSize = captureImageTemplate();
-				Log.d(TAG, "templateSize: " + templateSize.toString());
+				Log.d(TAG, "templateSize: " + templateSize[0]);
 				if (templateSize == new int[0]) {
 					Log.d(TAG, "captureImageTemplate Error: templateSize is 0 sized.");
 					callbackContext.error("captureImageTemplate Error: templateSize is 0 sized.");
@@ -490,12 +490,25 @@ public class SecugenPlugin extends CordovaPlugin {
     	int[] templateSize;
 		try {
 			templateSize = captureImageTemplate();
-//			UUID uuid = UUID.randomUUID();
-	    	String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Identify";
-	    	buildUploadMessage(callbackContext, templateSize, urlServer);
-	    	createImageFile(callbackContext);
+			if (templateSize.length == 0) {
+				String msg = "Scan failed: Unable to capture fingerprint. Please kill the app in the Task Manager and restart the app.";
+				Log.d(TAG, msg);
+				PluginResult result = new PluginResult(PluginResult.Status.OK, msg);
+	        	result.setKeepCallback(true);
+	        	callbackContext.sendPluginResult(result);
+			} else {
+				Log.d(TAG, "templateSize: " + templateSize[0]);
+//				UUID uuid = UUID.randomUUID();
+		    	String urlServer = SecugenPlugin.getServerUrl() + SecugenPlugin.getServerUrlFilepath() + "Identify";
+		    	buildUploadMessage(callbackContext, templateSize, urlServer);
+		    	createImageFile(callbackContext);
+			}
 		} catch (Exception e) {
-			callbackContext.error("captureImageTemplate Error: " + e);
+			e.printStackTrace();
+//			callbackContext.error("captureImageTemplate Error: " + e);
+			PluginResult result = new PluginResult(PluginResult.Status.OK, "Scan failed: Try again.");
+        	result.setKeepCallback(true);
+        	callbackContext.sendPluginResult(result);
 		}
 
     }
@@ -505,14 +518,9 @@ public class SecugenPlugin extends CordovaPlugin {
 	 * @throws Exception 
 	 */
 	public int[] captureImageTemplate() throws Exception {
-		if (mRegisterImage != null)
-        	mRegisterImage = null;
-        mRegisterImage = new byte[mImageWidth*mImageHeight];
-//    	this.mCheckBoxMatched.setChecked(false);
-        dwTimeStart = System.currentTimeMillis();          
-        long result = sgfplib.GetImage(mRegisterImage);
-        Utils.DumpFile("register" + System.currentTimeMillis() +".raw", mRegisterImage);
-        SecuGen.FDxSDKPro.SGDeviceInfoParam deviceInfo = new SecuGen.FDxSDKPro.SGDeviceInfoParam();
+		int[] templateSize = new int[1];
+		
+		SecuGen.FDxSDKPro.SGDeviceInfoParam deviceInfo = new SecuGen.FDxSDKPro.SGDeviceInfoParam();
 		sgfplib.GetDeviceInfo(deviceInfo);
         mImageWidth = deviceInfo.imageWidth;
 		mImageHeight= deviceInfo.imageHeight;
@@ -520,29 +528,42 @@ public class SecugenPlugin extends CordovaPlugin {
 		debugMessage("mImageWidth: " + mImageWidth);
 		debugMessage("mImageHeight: " + mImageHeight);
 		debugMessage("dpi: " + dpi);
+		if (mRegisterImage != null)
+        	mRegisterImage = null;
+        mRegisterImage = new byte[mImageWidth*mImageHeight];
+//    	this.mCheckBoxMatched.setChecked(false);
+        dwTimeStart = System.currentTimeMillis();          
+        long result = sgfplib.GetImage(mRegisterImage);
+//        Utils.DumpFile("register" + System.currentTimeMillis() +".raw", mRegisterImage);
 //		afis.setDpi(dpi);
         dwTimeEnd = System.currentTimeMillis();
         dwTimeElapsed = dwTimeEnd-dwTimeStart;
         debugMessage("GetImage() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
-        dwTimeStart = System.currentTimeMillis();
-        
-        // Create template from captured image
-        SGFingerInfo finger_info = new SGFingerInfo();
-        debugMessage("CreateTemplate() started \n");
-        for (int i=0; i< mRegisterTemplate.length; ++i)
-        	mRegisterTemplate[i] = 0;
-        result = sgfplib.CreateTemplate( finger_info , mRegisterImage, mRegisterTemplate );
-        int[] templateSize = new int[1];
-        sgfplib.GetTemplateSize(mRegisterTemplate, templateSize);
-        debugMessage("templateSize: " + templateSize[0]);
-        dwTimeEnd = System.currentTimeMillis();
-        dwTimeElapsed = dwTimeEnd-dwTimeStart;
-        debugMessage("CreateTemplate() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
-        if (result == 105) {
-        	debugMessage("Error: Template Extraction failed! " );
+        if (result == 0) {
+        	dwTimeStart = System.currentTimeMillis();       
+            // Create template from captured image
+            SGFingerInfo finger_info = new SGFingerInfo();
+            debugMessage("CreateTemplate() started \n");
+            for (int i=0; i< mRegisterTemplate.length; ++i)
+            	mRegisterTemplate[i] = 0;
+            result = sgfplib.CreateTemplate( finger_info , mRegisterImage, mRegisterTemplate );
+            sgfplib.GetTemplateSize(mRegisterTemplate, templateSize);
+            debugMessage("templateSize: " + templateSize[0]);
+            dwTimeEnd = System.currentTimeMillis();
+            dwTimeElapsed = dwTimeEnd-dwTimeStart;
+            debugMessage("CreateTemplate() ret:" + result + " [" + dwTimeElapsed + "ms]\n");
+            if (result == 105) {
+            	debugMessage("Error: Template Extraction failed! " );
+            	templateSize = new int[0];
+//            	throw new Exception("Error: Template Extraction failed" );
+            }
+        } else {
+        	if (result == 2) {
+        		debugMessage("Error: GetImage failed - Function call failed." );
+        	}
         	templateSize = new int[0];
-//        	throw new Exception("Error: Template Extraction failed" );
         }
+        
 //        String templatefileName = "register.template-" + System.currentTimeMillis() + ".txt";
 //        Utils.DumpFile(templatefileName, mRegisterTemplate);
 //        final String templatePath = SecugenPlugin.getTemplatePath() + templatefileName;
