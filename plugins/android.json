@@ -13,10 +13,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Version\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.version.Version\" /></feature>",
                             "count": 1
                         },
@@ -29,11 +25,19 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"WebIntent\"><param name=\"android-package\" value=\"com.borismus.webintent.WebIntent\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"FileTransfer\"><param name=\"android-package\" value=\"org.apache.cordova.filetransfer.FileTransfer\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"WebIntent\"><param name=\"android-package\" value=\"com.borismus.webintent.WebIntent\" /></feature>",
+                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -78,9 +82,6 @@
         "com.megster.cordova.bluetoothserial": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
-        "org.apache.cordova.file": {
-            "PACKAGE_NAME": "org.rti.kidsthrive"
-        },
         "org.apache.cordova.plugin.version": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
@@ -90,12 +91,19 @@
         "org.apache.cordova.dialogs": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
+        "com.borismus.webintent": {
+            "PACKAGE_NAME": "org.rti.kidsthrive"
+        },
         "org.apache.cordova.file-transfer": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
-        "com.borismus.webintent": {
+        "org.apache.cordova.device": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "org.apache.cordova.file": {
+            "PACKAGE_NAME": "org.rti.kidsthrive"
+        }
+    }
 }
