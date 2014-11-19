@@ -32,6 +32,12 @@ Change the url and paths in res/values/strings.xml
     <string name="serverUrlFilepath">api/Person/Enroll</string>
     <string name="serverKey">authorizationKey</string>
     <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
+    <string name="APP_VERSION">1</string>
+    <string name="WIPE_CACHE">1</string>
+
+## Updates
+
+Increment APP_VERSION and set WIPE_CACHE = 1 to force the app to wipe the app cache andreset the whole app. Read the [coconut README](https://github.com/chrisekelley/coconut/blob/coconut-pouch/README.md#how-do-i-handle-application-updates) for more information on updates.
 
 ## Debugging
 
