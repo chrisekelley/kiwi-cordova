@@ -31,7 +31,6 @@ import android.graphics.Bitmap;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
-import android.widget.EditText;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -47,47 +46,18 @@ public class SecugenPlugin extends CordovaPlugin {
 	
 	// actions
     private static final String ACTION_REQUEST_PERMISSION = "requestPermission";
-    private static final String CONNECT = "connect";
-    private static final String CONNECT_INSECURE = "connectInsecure";
-    private static final String DISCONNECT = "disconnect";
-    private static final String WRITE = "write";
-    private static final String AVAILABLE = "available";
-    private static final String READ = "read";
-    private static final String READ_UNTIL = "readUntil";
-    private static final String SUBSCRIBE = "subscribe";
-    private static final String UNSUBSCRIBE = "unsubscribe";
-    private static final String IS_ENABLED = "isEnabled";
-    private static final String IS_CONNECTED = "isConnected";
-    private static final String CLEAR = "clear";
     private static final String COOLMETHOD = "coolMethod";
     private static final String REGISTER = "register";
     private static final String IDENTIFY = "identify";
     private static final String CAPTURE = "capture";
     private static final String BLINK = "blink";
     private static final String VERIFY = "verify";
-    
-//	private Button mCapture;
-//    private Button mButtonRegister;
-//    private Button mButtonMatch;
-//    private Button mButtonLed;
-//    private Button mSDKTest;
-    private EditText mEditLog;
-//    private android.widget.TextView mTextViewResult;
-//    private android.widget.CheckBox mCheckBoxMatched;
-//    private android.widget.CheckBox mCheckBoxSCEnabled;
-    private PendingIntent mPermissionIntent;
-//    private ImageView mImageViewFingerprint;
-//    private ImageView mImageViewRegister;
-//    private ImageView mImageViewVerify;
     private byte[] mRegisterImage;
     private byte[] mVerifyImage;
     private byte[] mRegisterTemplate;
-    private byte[] mVerifyTemplate;
 	private int[] mMaxTemplateSize;
 	private int mImageWidth;
 	private int mImageHeight;
-	private int[] grayBuffer;
-    private Bitmap grayBitmap;
     private boolean mLed;
    
     private JSGFPLib sgfplib;
@@ -97,8 +67,7 @@ public class SecugenPlugin extends CordovaPlugin {
 	long dwTimeStart = 0, dwTimeEnd = 0, dwTimeElapsed = 0;
 	// UsbManager instance to deal with permission and opening
     private UsbManager manager;
-    
-//    static ArrayList<Person> database = null;
+   
 //    private AfisEngine afis;
     private ScanProperties props;
 
@@ -114,25 +83,7 @@ public class SecugenPlugin extends CordovaPlugin {
 		super.initialize(cordova, view);
 		
 		context = cordova.getActivity().getBaseContext();
-//
-//	    Properties properties = new Properties();
-//
-//		try {
-//			InputStream rawResource = context.getResources().getValue("");
-////					openRawResource(R.values.strings);
-//			properties.load(rawResource);
-//			LOG.d(TAG,"The properties are now loaded");
-//			LOG.d(TAG,"properties: " + properties);
-//		} catch (Resources.NotFoundException e) {
-//			System.err.println("Did not find raw resource: " + e);
-//		} catch (IOException e) {
-//			System.err.println("Failed to open property file");
-//		}
-	    
-//	    	String templatePathTemp = properties.getProperty("templatePath");
-//		LOG.d(TAG,"context.getApplicationInfo().className: " + context.getApplicationInfo().className);
 		LOG.d(TAG,"this.cordova.getActivity().getPackageName(): " + this.cordova.getActivity().getPackageName());
-//		int id = context.getResources().getIdentifier("strings", "values", this.cordova.getActivity().getPackageName());
 		int id = context.getResources().getIdentifier("templatePath", "string", this.cordova.getActivity().getPackageName());
     	LOG.d(TAG,"templatePath id: " + id);
     	String translatedValue = context.getResources().getString(id);
@@ -161,14 +112,6 @@ public class SecugenPlugin extends CordovaPlugin {
     	SecugenPlugin.setServerUrlFilepath(serverUrlFilepath);
 	}
 	
-//	if (message != null && message.length() > 0) {
-//        callbackContext.success(message);
-//    } else {
-//        callbackContext.error("Expected one non-empty string argument.");
-//    }
-	
-
-
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
@@ -177,22 +120,9 @@ public class SecugenPlugin extends CordovaPlugin {
     	LOG.d(TAG, "action = " + action);
 
     	boolean validAction = true;
-
-    	//USB Permissions
-//    	mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
-//    	IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-//    	context.registerReceiver(mUsbReceiver, filter);
-
     	// request permission
     	if (action.equals(ACTION_REQUEST_PERMISSION)) {
-//    		debugMessage("action: " + action);
-//    		this.requestPermission(callbackContext);
-//    		return true;
-//    		cordova.getActivity().runOnUiThread(new Runnable() {
-//    			public void run() {
-    				requestPermission(callbackContext);
-//    			}
-//    		});
+    		requestPermission(callbackContext);
     		return true;
     	} else if (action.equals(COOLMETHOD)) {
     		String message = args.getString(0);
@@ -201,178 +131,30 @@ public class SecugenPlugin extends CordovaPlugin {
     		validAction = true;
 
     	} else if (action.equals(REGISTER)) {
-
-    		//          listBondedDevices(callbackContext);
-    		//        	register(callbackContext);
-
     		cordova.getActivity().runOnUiThread(new Runnable() {
     			public void run() {
     				register(callbackContext);
     			}
     		});
     		return true;
-    		
     	} else if (action.equals(IDENTIFY)) {
-    		
-    		//          listBondedDevices(callbackContext);
-    		//        	register(callbackContext);
-    		
     		cordova.getActivity().runOnUiThread(new Runnable() {
     			public void run() {
     				identify(callbackContext);
     			}
     		});
     		return true;
-
     	} else if (action.equals(CAPTURE)) {
-
-    		//          boolean secure = true;
-    		//          connect(args, secure, callbackContext);
     		capture(callbackContext);
-
     	} else if (action.equals(BLINK)) {
-
-    		//          boolean secure = true;
-    		//          connect(args, secure, callbackContext);
     		blink(callbackContext);
-
     	} else if (action.equals(VERIFY)) {
-
-    		//          boolean secure = true;
-    		//          connect(args, secure, callbackContext);
     		verify(callbackContext);
-
-    	} else if (action.equals(CONNECT_INSECURE)) {
-
-    		// see Android docs about Insecure RFCOMM http://goo.gl/1mFjZY
-    		//          boolean secure = false;
-    		//          connect(args, false, callbackContext);
-
-    	} else if (action.equals(DISCONNECT)) {
-
-    		//          connectCallback = null;
-    		//          bluetoothSerialService.stop();
-    		//          callbackContext.success();
-
-    	} else if (action.equals(WRITE)) {
-
-    		//          String data = args.getString(0);
-    		//          bluetoothSerialService.write(data.getBytes());
-    		//          callbackContext.success();
-
-    	} else if (action.equals(AVAILABLE)) {
-
-    		//          callbackContext.success(available());
-
-    	} else if (action.equals(READ)) {
-
-    		//          callbackContext.success(read());
-
-    	} else if (action.equals(READ_UNTIL)) {
-
-    		//          String interesting = args.getString(0);
-    		//          callbackContext.success(readUntil(interesting));
-
-    	} else if (action.equals(SUBSCRIBE)) {
-
-    		//          delimiter = args.getString(0);
-    		//          dataAvailableCallback = callbackContext;
-    		//
-    		//          PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-    		//          result.setKeepCallback(true);
-    		//          callbackContext.sendPluginResult(result);
-
-    	} else if (action.equals(UNSUBSCRIBE)) {
-
-    		//          delimiter = null;
-    		//          dataAvailableCallback = null;
-    		//
-    		//          callbackContext.success();
-
-    	} else if (action.equals(IS_ENABLED)) {
-
-    		//          if (bluetoothAdapter.isEnabled()) {
-    		//              callbackContext.success();                
-    		//          } else {
-    		//              callbackContext.error("Bluetooth is disabled.");
-    		//          }            
-
-    	} else if (action.equals(IS_CONNECTED)) {
-
-    		//          if (bluetoothSerialService.getState() == BluetoothSerialService.STATE_CONNECTED) {
-    		//              callbackContext.success();                
-    		//          } else {
-    		//              callbackContext.error("Not connected.");
-    		//          }
-
-    	} else if (action.equals(CLEAR)) {
-
-    		//          buffer.setLength(0);
-    		//          callbackContext.success();
-
-    	} else {
-
-    		//          validAction = false;
-
-    	}
-
-//    	PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-//    	result.setKeepCallback(true);
-//    	callbackContext.sendPluginResult(result);
-
+    	} 
     	return validAction;
     }
     
 
-	/**
-	 * @param usbDevice
-	 */
-	public void requestPermissionOld(final CallbackContext callbackContext) {
-		debugMessage("requestPermission.");
-		
-		debugMessage("Getting ACTION_USB_PERMISSION \n");
-        sgfplib = new JSGFPLib((UsbManager)context.getSystemService(Context.USB_SERVICE));
-//    	this.mCheckBoxSCEnabled.setChecked(true);
-		debugMessage("jnisgfplib version: " + sgfplib.Version() + "\n");
-		mLed = false;
-		//		        	sgfplib.writeData((byte)5, (byte)0);
-		
-		long error = sgfplib.Init( SGFDxDeviceName.SG_DEV_AUTO);
-		if (error != SGFDxErrorCode.SGFDX_ERROR_NONE){
-			if (error == SGFDxErrorCode.SGFDX_ERROR_DEVICE_NOT_FOUND) {
-				String message = "Either a fingerprint device is not attached or the attached fingerprint device is not supported.";
-				debugMessage(message);
-				callbackContext.error(message);
-			} else {
-				String message = "Fingerprint device initialization failed!";
-				debugMessage(message);     
-				callbackContext.error(message);
-			}
-		}
-		else {
-			final UsbDevice usbDevice = sgfplib.GetUsbDevice();
-			if (usbDevice == null){
-				String message = "SDU04P or SDU03P fingerprint sensor not found!";
-				debugMessage(message);
-				callbackContext.error(message);
-			}
-			cordova.getThreadPool().execute(new Runnable() {
-	            public void run() {
-//	            	sgfplib.GetUsbManager().requestPermission(usbDevice, mPermissionIntent);
-	            	// get UsbManager from Android
-	                manager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
-	             // finally ask for the permission
-	                debugMessage("Requesting Permission from UsbManager.");
-                    manager.requestPermission(usbDevice, mPermissionIntent);
-	            	initDeviceSettings();
-	    			callbackContext.success("Fingerprint scanner initialised.");
-
-	            }
-			 });
-			
-		}
-	}
-	
 	 /**
      * Request permission the the user for the app to use the USB/serial port
      * @param callbackContext the cordova {@link CallbackContext}
@@ -382,43 +164,21 @@ public class SecugenPlugin extends CordovaPlugin {
             public void run() {
                 // get UsbManager from Android
                 manager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
-//                UsbSerialProber prober;
-//
-//                if (opts.has("vid") && opts.has("pid")) {
-//                    ProbeTable customTable = new ProbeTable();
-//                    Object o_vid = opts.opt("vid"); //can be an integer Number or a hex String
-//                    Object o_pid = opts.opt("pid"); //can be an integer Number or a hex String
-//                    int vid = o_vid instanceof Number ? ((Number) o_vid).intValue() : Integer.parseInt((String) o_vid,16);
-//                    int pid = o_pid instanceof Number ? ((Number) o_pid).intValue() : Integer.parseInt((String) o_pid,16);
-//                    customTable.addProduct(vid, pid, CdcAcmSerialDriver.class); //vid and pid are now integers
-//
-//                    prober = new UsbSerialProber(customTable);
-//
-//                }
-//                else {
-//                    // find all available drivers from attached devices.
-//                    prober = UsbSerialProber.getDefaultProber();
-//                }
-//
-//                List<UsbSerialDriver> availableDrivers = prober.findAllDrivers(manager);
-                
                 sgfplib = new JSGFPLib((UsbManager)context.getSystemService(Context.USB_SERVICE));
-//            	this.mCheckBoxSCEnabled.setChecked(true);
         		debugMessage("jnisgfplib version: " + sgfplib.Version() + "\n");
         		mLed = false;
         		//		        	sgfplib.writeData((byte)5, (byte)0);
         		
         		long error = sgfplib.Init( SGFDxDeviceName.SG_DEV_AUTO);
         		if (error != SGFDxErrorCode.SGFDX_ERROR_NONE){
+        			String message = "Fingerprint device initialization failed!";
         			if (error == SGFDxErrorCode.SGFDX_ERROR_DEVICE_NOT_FOUND) {
-        				String message = "Either a fingerprint device is not attached or the attached fingerprint device is not supported.";
-        				debugMessage(message);
-        				callbackContext.error(message);
-        			} else {
-        				String message = "Fingerprint device initialization failed!";
-        				debugMessage(message);     
-        				callbackContext.error(message);
+        				message = "Error: Either a fingerprint device is not attached or the attached fingerprint device is not supported.";
         			}
+    				debugMessage(message);     
+        			PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
+                	result.setKeepCallback(true);
+                	callbackContext.sendPluginResult(result);
         		}
 //                if (!availableDrivers.isEmpty()) {
         		else {
@@ -427,9 +187,11 @@ public class SecugenPlugin extends CordovaPlugin {
 //                    UsbDevice device = driver.getDevice();
         			UsbDevice usbDevice = sgfplib.GetUsbDevice();
         			if (usbDevice == null){
-        				String message = "SDU04P or SDU03P fingerprint sensor not found!";
+        				String message = "Error: Fingerprint sensor not found!";
         				debugMessage(message);
-        				callbackContext.error(message);
+        				PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
+                    	result.setKeepCallback(true);
+                    	callbackContext.sendPluginResult(result);
         			}
                     // create the intent that will be used to get the permission
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(cordova.getActivity(), 0, new Intent(UsbBroadcastReceiver.USB_PERMISSION), 0);
@@ -493,7 +255,7 @@ public class SecugenPlugin extends CordovaPlugin {
 			if (templateSize.length == 0) {
 				String msg = "Scan failed: Unable to capture fingerprint. Please kill the app in the Task Manager and restart the app.";
 				Log.d(TAG, msg);
-				PluginResult result = new PluginResult(PluginResult.Status.OK, msg);
+				PluginResult result = new PluginResult(PluginResult.Status.ERROR, msg);
 	        	result.setKeepCallback(true);
 	        	callbackContext.sendPluginResult(result);
 			} else {
@@ -506,7 +268,7 @@ public class SecugenPlugin extends CordovaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 //			callbackContext.error("captureImageTemplate Error: " + e);
-			PluginResult result = new PluginResult(PluginResult.Status.OK, "Scan failed: Try again.");
+			PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Scan failed: Try again.");
         	result.setKeepCallback(true);
         	callbackContext.sendPluginResult(result);
 		}
@@ -615,7 +377,10 @@ public class SecugenPlugin extends CordovaPlugin {
 			            debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
 			        } catch (Exception e) {
 			            e.printStackTrace();
-			            callbackContext.error("Upload Error: " + serviceResponse + " Error: " + e);
+			            String message = "Upload Error: " + serviceResponse + " Error: " + e;
+			            PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
+                    	result.setKeepCallback(true);
+                    	callbackContext.sendPluginResult(result);
 			            dwTimeEnd = System.currentTimeMillis();
 			            dwTimeElapsed = dwTimeEnd-dwTimeStart;
 			            debugMessage("uploadMessage() ret:" + uploadMessage + " [" + dwTimeElapsed + "ms]\n");
@@ -733,29 +498,6 @@ public class SecugenPlugin extends CordovaPlugin {
 		}
         
     }
-
-//	/*
-//	 * Utility function to create a person from finger print template.
-//	 */
-//	static Person getPerson(int id,byte[][] template) throws IOException {
-//		Fingerprint arrFp[] = new Fingerprint[template.length];
-//		for(int x=0;x<template.length;x++){	
-//			arrFp[x] = new Fingerprint();
-//			arrFp[x].setIsoTemplate(template[x]);
-//		}
-//		Person p=new Person(arrFp);
-//		p.setId(id);
-//		return p;
-//	}
-//	
-//	static Person getPerson(int id,byte[] template) throws IOException {
-//		Fingerprint arrFp[] = new Fingerprint[1];
-//		arrFp[0] = new Fingerprint();
-//		arrFp[0].setIsoTemplate(template);
-//		Person p=new Person(arrFp);
-//		p.setId(id);
-//		return p;
-//	}
     
     private void debugMessage(String message) {
     	//      this.mEditLog.append(message);
@@ -814,7 +556,6 @@ public class SecugenPlugin extends CordovaPlugin {
     	mRegisterImage = null;
     	mVerifyImage = null;
     	mRegisterTemplate = null;
-    	mVerifyTemplate = null;
     	sgfplib.Close();
         super.onDestroy();
     }
@@ -854,17 +595,8 @@ public class SecugenPlugin extends CordovaPlugin {
 		sgfplib.GetMaxTemplateSize(mMaxTemplateSize);
 		debugMessage("mMaxTemplateSize: " + mMaxTemplateSize[0] + "\n");
 		mRegisterTemplate = new byte[mMaxTemplateSize[0]];
-		mVerifyTemplate = new byte[mMaxTemplateSize[0]];
 		sgfplib.writeData((byte)5, (byte)1);
 	}
-
-//    public static ArrayList<Person> getDatabase() {
-//		return database;
-//	}
-//
-//	public static void setDatabase(ArrayList<Person> database) {
-//		SecugenPlugin.database = database;
-//	}
 
 	public static String getTemplatePath() {
 		return templatePath;

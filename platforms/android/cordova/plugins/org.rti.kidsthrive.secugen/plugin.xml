@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="org.rti.kidsthrive.secugen" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<name>SecugenPlugin</name>
+<description>Plugin for Secugen fingerprint scanners</description>
+<js-module name="SecugenPlugin" src="www/SecugenPlugin.js">
+<clobbers target="cordova.plugins.SecugenPlugin" />
+</js-module>
+<platform name="android">
+<config-file parent="/*" target="res/xml/config.xml">
+<feature name="SecugenPlugin"><param name="android-package" value="org.rti.kidsthrive.secugenplugin.SecugenPlugin" />
+<param name="onload" value="true" />
+</feature>
+</config-file>
+<config-file parent="/*" target="platforms/android/res/xml/strings.xml">
+     <string name="templatePath">/sdcard/Download/</string>
+</config-file>
+<source-file src="res/xml/device_filter.xml" target-dir="res/xml" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/SecugenPlugin.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/ScanProperties.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/SourceAfisUtils.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/Utils.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/org/rti/kidsthrive/secugenplugin/UsbBroadcastReceiver.java" target-dir="src/org/rti/kidsthrive/secugenplugin" />
+<source-file src="src/sourceafis/simple/AfisEngine.java" target-dir="src/sourceafis/simple" />
+<source-file src="src/sourceafis/simple/Finger.java" target-dir="src/sourceafis/simple" />
+<source-file src="src/sourceafis/simple/Fingerprint.java" target-dir="src/sourceafis/simple" />
+<source-file src="src/sourceafis/simple/Person.java" target-dir="src/sourceafis/simple" />
+<source-file src="src/sourceafis/templates/CompactFormat.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/IsoFormat.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/SerializedFormat.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/Template.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/XmlFormat.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/TemplateFormatBase.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/TemplateBuilder.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/ITemplateFormat.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/Minutia.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/templates/MinutiaType.java" target-dir="src/sourceafis/templates" />
+<source-file src="src/sourceafis/extraction/Extractor.java" target-dir="src/sourceafis/extraction" />
+<source-file src="src/sourceafis/extraction/filters/AbsoluteContrast.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/ClippedContrast.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/CrossRemover.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/Equalizer.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/HillOrientation.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/ImageInverter.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/InnerMask.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/LinesByOrientation.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/LocalHistogram.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/OrientedSmoother.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/RelativeContrast.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/SegmentationMask.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/Thinner.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/ThresholdBinarizer.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/filters/VotingFilter.java" target-dir="src/sourceafis/extraction/filters" />
+<source-file src="src/sourceafis/extraction/minutiae/MinutiaCloudRemover.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/minutiae/MinutiaCollector.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/minutiae/MinutiaMask.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/minutiae/MinutiaShuffler.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/minutiae/StandardDpiScaling.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/minutiae/UniqueMinutiaSorter.java" target-dir="src/sourceafis/extraction/minutiae" />
+<source-file src="src/sourceafis/extraction/model/BranchMinutiaRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/DotRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/FragmentRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/GapRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/ISkeletonFilter.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/KnotRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/PoreRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/Ridge.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/RidgeTracer.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/SkeletonBuilder.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/SkeletonBuilderMinutia.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/SkeletonShadow.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/extraction/model/TailRemover.java" target-dir="src/sourceafis/extraction/model" />
+<source-file src="src/sourceafis/general/Angle.java" target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/BinaryMap.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/CircularArray.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Neighborhood.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/PointS.java"       target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/PriorityQueueF.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/RectangleC.java"     target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/SizeF.java" target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/ArrayUtils.java"        target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/BlockMap.java"    target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/DetailLogger.java"    target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Point.java"          target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/PolarPoint.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Range.java" target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/ReversedList.java" target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/AssertException.java"   target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Calc.java"        target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/IteratorSink.java"    target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/PointF.java"        target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Predicate.java"    target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/RangeF.java"           target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/Size.java"  target-dir="src/sourceafis/general" />
+<source-file src="src/sourceafis/general/parallel/Parallel.java"  target-dir="src/sourceafis/general/parallel" />
+<source-file src="src/sourceafis/general/parallel/ParallelForDelegate.java"  target-dir="src/sourceafis/general/parallel" />
+<source-file src="src/sourceafis/general/parallel/ParallelForEachDelegate.java"  target-dir="src/sourceafis/general/parallel" />
+<source-file src="src/sourceafis/matching/BestMatchSkipper.java" target-dir="src/sourceafis/matching" />
+<source-file src="src/sourceafis/matching/ParallelMatcher.java" target-dir="src/sourceafis/matching" />
+<source-file src="src/sourceafis/matching/ProbeIndex.java" target-dir="src/sourceafis/matching" />
+<source-file src="src/sourceafis/matching/MatchAnalysis.java" target-dir="src/sourceafis/matching" />
+<source-file src="src/sourceafis/matching/MatchScoring.java" target-dir="src/sourceafis/matching" />
+<source-file src="src/sourceafis/matching/minutia/EdgeConstructor.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgeHash.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgeLocation.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgeLookup.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgePair.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgeShape.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/EdgeTable.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/HashLookup.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/IndexedEdge.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/MinutiaMatcher.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/MinutiaPair.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/MinutiaPairing.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/NeighborEdge.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/PairInfo.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/PairSelector.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/matching/minutia/RootPairSelector.java" target-dir="src/sourceafis/matching/minutia" />
+<source-file src="src/sourceafis/meta/Action.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/DpiAdjusted.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/DpiAdjuster.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/Nested.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/ObjectTree.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/Parameter.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/ParameterSet.java" target-dir="src/sourceafis/meta" />
+<source-file src="src/sourceafis/meta/ParameterValue.java" target-dir="src/sourceafis/meta" />
+<source-file src="libs/FDxSDKProAndroid.jar" target-dir="libs" />
+<source-file src="libs/httpclient-4.3.4.jar" target-dir="libs" />
+<source-file src="libs/httpmime-4.3.4.jar" target-dir="libs" />
+<source-file src="libs/httpcore-4.3.2.jar" target-dir="libs" />
+<source-file src="libs/commons-io-2.4.jar" target-dir="libs" />
+<source-file src="libs/armeabi" target-dir="libs" />
+</platform></plugin>
