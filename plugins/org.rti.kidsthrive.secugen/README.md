@@ -25,6 +25,7 @@ In your Cordova project's platforms/android/res/values/strings.xml, set the foll
     <string name="serverUrlFilepath">api/Person/Enroll</string>
     <string name="serverKey">authenticationKey</string>
     <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
+    <string name="projectName">projectName</string>
 
 # Development
 
