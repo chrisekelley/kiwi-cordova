@@ -7,6 +7,6 @@
     <string name="serverKey">HH8XGFYSDU9QGZ833</string>
     <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
     <string name="projectName">Kiwi-Moz-2014</string>
-    <string name="APP_VERSION">3</string>
+    <string name="APP_VERSION">5</string>
     <string name="WIPE_CACHE">1</string>
 </resources>
