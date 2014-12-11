@@ -39,6 +39,10 @@
                         {
                             "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Logger\"><param name=\"android-package\" value=\"com.scispike.logger.Logger\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -62,6 +66,10 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.VIBRATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.READ_LOGS\" />",
                             "count": 1
                         }
                     ],
@@ -98,6 +106,9 @@
             "PACKAGE_NAME": "org.rti.kidsthrive"
         },
         "org.apache.cordova.device": {
+            "PACKAGE_NAME": "org.rti.kidsthrive"
+        },
+        "com.scispike.logger": {
             "PACKAGE_NAME": "org.rti.kidsthrive"
         }
     },

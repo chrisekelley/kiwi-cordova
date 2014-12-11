@@ -1,0 +1,16 @@
+{
+    "version": "0.0.2",
+    "name": "com.scispike.logger",
+    "cordova_name": "Logger",
+    "description": "Get logs",
+    "license": "MIT",
+    "platforms": [
+        "android"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        }
+    ]
+}

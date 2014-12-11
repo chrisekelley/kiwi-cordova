@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+           id="com.scispike.logger"
+      version="0.0.2">
+    <name>Logger</name>
+    <description>Get logs</description>
+    <license>MIT</license>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines> 
+ 
+    <js-module src="www/logger.js" name="logger">
+        <clobbers target="logger" />
+    </js-module>
+            
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Logger">
+                <param name="android-package" value="com.scispike.logger.Logger"/>
+            </feature>
+        </config-file>
+ 
+        <source-file src="src/android/com/scispike/logger/Logger.java" target-dir="src/com/scispike/logger" /> 
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.READ_LOGS" />
+        </config-file>
+
+    </platform>          
+</plugin>
