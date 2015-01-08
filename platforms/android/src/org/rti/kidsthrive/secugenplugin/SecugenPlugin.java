@@ -53,6 +53,7 @@ public class SecugenPlugin extends CordovaPlugin {
     private static final String CAPTURE = "capture";
     private static final String BLINK = "blink";
     private static final String VERIFY = "verify";
+    private static final String SCAN = "scan";
     private byte[] mRegisterImage;
     private byte[] mVerifyImage;
     private byte[] mRegisterTemplate;
@@ -145,6 +146,13 @@ public class SecugenPlugin extends CordovaPlugin {
     		cordova.getActivity().runOnUiThread(new Runnable() {
     			public void run() {
     				identify(callbackContext);
+    			}
+    		});
+    		return true;
+    	} else if (action.equals(SCAN)) {
+    		cordova.getActivity().runOnUiThread(new Runnable() {
+    			public void run() {
+    				scan(callbackContext);
     			}
     		});
     		return true;
@@ -276,7 +284,36 @@ public class SecugenPlugin extends CordovaPlugin {
         	result.setKeepCallback(true);
         	callbackContext.sendPluginResult(result);
 		}
-
+    }
+    
+    private void scan(final CallbackContext callbackContext) {
+    	debugMessage("Clicked scan\n");
+    	int[] templateSize;
+    	try {
+    		templateSize = captureImageTemplate();
+    		if (templateSize.length == 0) {
+    			String msg = "Scan failed: Unable to capture fingerprint. Please kill the app in the Task Manager and restart the app.";
+    			Log.d(TAG, msg);
+    			PluginResult result = new PluginResult(PluginResult.Status.ERROR, msg);
+    			result.setKeepCallback(true);
+    			callbackContext.sendPluginResult(result);
+    		} else {
+    			Log.d(TAG, "templateSize: " + templateSize[0]);
+    			String templateString;
+    			byte[] newTemplate = Arrays.copyOfRange(mRegisterTemplate, 0, templateSize[0]);
+    			templateString = Utils.encodeHexToString(newTemplate, Utils.DIGITS_UPPER);
+    			Log.d(TAG, "templateString: " + templateString);
+    			PluginResult result = new PluginResult(PluginResult.Status.OK, templateString);
+	        	result.setKeepCallback(true);
+	        	callbackContext.sendPluginResult(result);
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+//			callbackContext.error("captureImageTemplate Error: " + e);
+    		PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Scan failed: Try again.");
+    		result.setKeepCallback(true);
+    		callbackContext.sendPluginResult(result);
+    	}
     }
 
 	/**

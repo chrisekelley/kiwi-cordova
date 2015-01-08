@@ -18,7 +18,9 @@ exports.blink = function(success, error) {
 exports.verify = function(success, error) {
 	exec(success, error, "SecugenPlugin", "verify", []);
 };
-exports.requestPermission = function(successCallback, errorCallback) {
-    exec(successCallback, errorCallback, 'SecugenPlugin', 'requestPermission', []);
+exports.requestPermission = function(success, error) {
+    exec(success, error, 'SecugenPlugin', 'requestPermission', []);
 };
-
+exports.scan = function(success, error) {
+	exec(success, error, "SecugenPlugin", "scan", []);
+};
