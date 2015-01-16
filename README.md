@@ -24,6 +24,7 @@ Use platforms/android/bakeapp.sh to refresh the plugin when you change it.
 
 ## Configuration
 
+
 Change the url and paths in res/values/strings.xml
 
     <string name="app_name">Kiwi</string>
@@ -37,7 +38,11 @@ Change the url and paths in res/values/strings.xml
 
 ## Updates
 
-Increment APP_VERSION and set WIPE_CACHE = 1 to force the app to wipe the app cache andreset the whole app. Read the [coconut README](https://github.com/chrisekelley/coconut/blob/coconut-pouch/README.md#how-do-i-handle-application-updates) for more information on updates.
+Increment APP_VERSION and set WIPE_CACHE = 1 to force the app to wipe the app cache and reset the whole app. 
+
+Increment version="1.0.9"  and android:versionCode="11" in config.xml. 
+
+Read the [coconut README](https://github.com/chrisekelley/coconut/blob/coconut-pouch/README.md#how-do-i-handle-application-updates) for more information on updates.
 
 ## Debugging
 

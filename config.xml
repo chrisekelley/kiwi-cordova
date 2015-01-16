@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.rti.kidsthrive" version="1.0.8" android-versionCode="10" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Kiwi</name>
+<widget id="org.rti.kidsthrive" version="1.0.9" android-versionCode="11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>KiwiPrints</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        A data collection application.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
+    <author email="chris@vetula.com" href="http://kinotel.com">
         Apache Cordova Team
     </author>
     <content src="index.html" />

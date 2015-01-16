@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Kiwi</string>
+    <string name="app_name">KiwiPrints</string>
     <string name="templatePath">/sdcard/Download/fprints/</string>
     <string name="serverUrl">https://afis.simprints.com/</string>
     <string name="serverUrlFilepath">api/Person/</string>
     <string name="serverKey">HH8XGFYSDU9QGZ833</string>
     <string name="templateFormat">TEMPLATE_FORMAT_ISO19794</string>
-    <string name="projectName">Kiwi-Moz-2014</string>
-    <string name="APP_VERSION">10</string>
+    <string name="projectName">Kiwi-Moz-2015</string>
+    <string name="APP_VERSION">11</string>
     <string name="WIPE_CACHE">1</string>
 </resources>
