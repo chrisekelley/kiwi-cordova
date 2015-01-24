@@ -5,7 +5,15 @@ to enable fingerprint scanning for identification. This plugin works with the Se
 
 # Development
 
-This application was built using Cordova.
+## Overview
+
+This application was built using Cordova, which is a container for the single page web application that provides most of the user interface for the app.
+
+## Equipment
+
+This project uses a Secugen Hamster Plus for fingerprint scanning. The [equipment setup](docs/equipment_setup.md) is documented.
+
+## Deploy
 
 To deploy to tablet:
 
